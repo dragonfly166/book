@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/all")
     public ApiResult<List<User>> all() throws Exception {
         if (!"admin".equals(UserUtil.getIdentity())) {
-            throw new Exception("非管理员，无权限");
+            return ApiResult.fail("非管理员，无权限");
         }
         List<User> users = userMapper.queryAllUser();
         return ApiResult.success(users);

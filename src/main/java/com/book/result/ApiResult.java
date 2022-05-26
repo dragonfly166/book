@@ -1,6 +1,8 @@
 package com.book.result;
 
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author sunlongfei
@@ -17,7 +19,7 @@ public class ApiResult<T> {
         this.data = data;
     }
 
-    public static ApiResult<?> success() {
+    public static <W> ApiResult<W> success() {
         return new ApiResult<>("success", null);
     }
 
@@ -25,7 +27,8 @@ public class ApiResult<T> {
         return new ApiResult<>("success", data);
     }
 
-    public static ApiResult<?> fail(String msg) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public static <W> ApiResult<W> fail(String msg) {
         return new ApiResult<>(msg, null);
     }
 }

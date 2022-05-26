@@ -2,6 +2,7 @@ package com.book.mapper;
 
 import com.book.domain.User;
 import com.book.domain.UserCoreInfo;
+import com.book.domain.UserProfile;
 import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -56,4 +57,10 @@ public interface UserMapper {
                 + "<if test='user.avatar!=null'>,avatar = #{user.avatar} </if>"
                 + "WHERE id = #{id}</script>")
     void updateUser(User user,int id);
+
+    /**
+     * 查询用户基本信息
+     */
+    @Select("SELECT id, name, avatar FROM user WHERE id = #{id}")
+    UserProfile queryUserProfileById(int id);
 }
