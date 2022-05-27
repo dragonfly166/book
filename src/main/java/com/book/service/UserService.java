@@ -4,12 +4,14 @@ import com.book.domain.UserCoreInfo;
 import com.book.mapper.UserMapper;
 import com.book.util.JwtUtil;
 import com.google.gson.Gson;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 
 /**
  * @author sunlongfei
@@ -41,7 +43,8 @@ public class UserService {
      * 用户登录
      */
     public String login(String username, String password) throws Exception {
-        String key = "user:core.info:username-" + username + "password-" + password;
+        String key = "user:core.info:" + DigestUtils.md5DigestAsHex(("username:" + username + "password:" + password).getBytes(
+            StandardCharsets.UTF_8));
         String value = redisTemplate.opsForValue().get(key);
         UserCoreInfo info;
         if (value == null) {

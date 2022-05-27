@@ -2,26 +2,24 @@ package com.book.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
  * @author sunlongfei
  */
 @Data
-public class Order {
+@AllArgsConstructor
+public class LackResult {
 
     private Integer id;
 
-    private Integer userId;
+    private String bookName;
 
-    private Integer bookId;
+    private UserProfile publisher;
 
-    private Double price;
+    private Boolean isSolved;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date createTime;
-
-    private Boolean isSuccess;
-
-    private String address;
 }

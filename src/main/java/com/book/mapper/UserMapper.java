@@ -61,6 +61,6 @@ public interface UserMapper {
     /**
      * 查询用户基本信息
      */
-    @Select("SELECT id, name, avatar FROM user WHERE id = #{id}")
+    @Select("SELECT id, username, avatar FROM user WHERE id = #{id}")
     UserProfile queryUserProfileById(int id);
 }

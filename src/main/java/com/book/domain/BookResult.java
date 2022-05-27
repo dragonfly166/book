@@ -1,10 +1,15 @@
 package com.book.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * @author sunlongfei
  */
+@Data
+@AllArgsConstructor
 public class BookResult {
 
     private Integer id;
@@ -23,18 +28,6 @@ public class BookResult {
 
     private Boolean sold;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date createTime;
-
-    public BookResult(Integer id, String name, String description, String image,
-        UserProfile publisher, Double price, Integer watchNum, Boolean sold, Date createTime) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.image = image;
-        this.publisher = publisher;
-        this.price = price;
-        this.watchNum = watchNum;
-        this.sold = sold;
-        this.createTime = createTime;
-    }
 }

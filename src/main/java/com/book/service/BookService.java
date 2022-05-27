@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,10 +48,10 @@ public class BookService {
         List<BookResult> result = new ArrayList<>(books.size());
         for (Book book: books) {
             UserProfile user;
-            String userStr = redisTemplate.opsForValue().get("book:user.profile:" + book.getPublisherId() + ":string");
+            String userStr = redisTemplate.opsForValue().get("user:profile:" + book.getPublisherId() + ":string");
             if (userStr == null) {
                 user = userMapper.queryUserProfileById(book.getPublisherId());
-                redisTemplate.opsForValue().set("book:user.profile:" + book.getPublisherId() + ":string",
+                redisTemplate.opsForValue().set("user:profile:" + book.getPublisherId() + ":string",
                     gson.toJson(user), 3, TimeUnit.DAYS);
             }
             user = gson.fromJson(userStr, UserProfile.class);
