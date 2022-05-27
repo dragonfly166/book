@@ -27,49 +27,49 @@ public interface BookMapper {
     /**
      * 根据id查询旧书信息
      */
-    @Select("")
+    @Select("select * from book where id = #{id}")
     Book queryBookById(int id);
 
     /**
      * 更新指定id旧书的阅读量（+1）
      */
-    @Update("")
+    @Update("update book set watch_num=watch_num+1 where id = #{id}")
     void addWatch(int id);
 
     /**
      * 更新书籍销售情况sold字段，值由参数提供
      */
-    @Update("")
-    void updateSold(boolean sold);
+    @Update("update book set sold = #{sold} WHERE id = #{id}")
+    void updateSold(boolean sold, int id);
 
     /**
      * 添加新的order
      */
-    @Insert("")
+    @Insert("insert into `order` (user_id, book_id, cost, address) values (#{userId}, #{bookId}, #{cost}, #{address})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "key.id")
-    void addOrder(int userId, int bookId, double price, String address, AutoKey key);
+    void addOrder(int userId, int bookId, double cost, String address, AutoKey key);
 
     /**
      * 查询指定id的订单
      */
-    @Select("")
+    @Select("select * from book.order where id = #{id}")
     Order queryOrderById(int id);
 
     /**
      * 查看指定用户id的所有订单
      */
-    @Select("")
+    @Select("select * from book.order where user_id = #{userId}")
     List<Order> queryOrdersByUserId(int userId);
 
     /**
      * 查看所有订单，不限用户
      */
-    @Select("")
+    @Select("select * from book.order")
     List<Order> queryAllOrders();
 
     /**
      * 添加新的书籍
      */
-    @Insert("")
-    void addBook(String name, String description, String imageUrl, double price);
+    @Insert("insert into book (name, description, image, price, publisher_id) values (#{name}, #{description}, #{imageUrl}, #{price}, #{publisherId})")
+    void addBook(String name, String description, String imageUrl, double price, int publisherId);
 }

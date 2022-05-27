@@ -3,8 +3,10 @@ package com.book.controller;
 import com.book.domain.User;
 import com.book.mapper.UserMapper;
 import com.book.result.ApiResult;
+import com.book.service.ImageService;
 import com.book.service.UserService;
 import com.book.util.UserUtil;
+import java.io.IOException;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author sunlongfei
@@ -27,6 +30,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ImageService imageService;
 
     /**
      * 查询我的信息
@@ -73,7 +79,15 @@ public class UserController {
      * 修改本用户信息
      */
     @PostMapping("/update")
-    public ApiResult<?> update(User user) {
+    public ApiResult<?> update(MultipartFile avatarImg, User user) throws IOException {
+        if (user == null) {
+            user = new User();
+        }
+        String url = null;
+        if (avatarImg != null) {
+            url = imageService.saveImage(avatarImg);
+        }
+        user.setAvatar(url);
         userMapper.updateUser(user, UserUtil.getUserId());
         return ApiResult.success();
     }

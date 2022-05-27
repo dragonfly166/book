@@ -47,8 +47,9 @@ public class LackService {
                 user = userMapper.queryUserProfileById(lack.getPublisherId());
                 redisTemplate.opsForValue().set("user:profile:" + lack.getPublisherId() + ":string",
                     gson.toJson(user), 3, TimeUnit.DAYS);
+            } else {
+                user = gson.fromJson(userStr, UserProfile.class);
             }
-            user = gson.fromJson(userStr, UserProfile.class);
             result.add(new LackResult(lack.getId(), lack.getBookName(), user,
                 lack.getIsSolved(), lack.getCreateTime()));
         }

@@ -8,13 +8,13 @@ import lombok.Data;
  * @author sunlongfei
  */
 @Data
-public class Order {
+public class OrderResult {
 
     private Integer id;
 
-    private Integer userId;
+    private UserProfile user;
 
-    private Integer bookId;
+    private Book book;
 
     private Double cost;
 
@@ -24,4 +24,13 @@ public class Order {
     private Boolean isSuccess;
 
     private String address;
+
+    public OrderResult(Integer id, Double cost, Date createTime,
+        Boolean isSuccess, String address) {
+        this.id = id;
+        this.cost = cost;
+        this.createTime = createTime;
+        this.isSuccess = isSuccess;
+        this.address = address;
+    }
 }

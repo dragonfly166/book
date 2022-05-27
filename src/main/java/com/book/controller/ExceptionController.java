@@ -15,6 +15,7 @@ public class ExceptionController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResult<?> exception(Exception e) {
+        System.out.println(e.getMessage());
         return ApiResult.fail(e.getMessage());
     }
 }

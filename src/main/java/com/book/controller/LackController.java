@@ -5,7 +5,6 @@ import com.book.mapper.LackMapper;
 import com.book.result.ApiResult;
 import com.book.service.LackService;
 import com.book.util.UserUtil;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
