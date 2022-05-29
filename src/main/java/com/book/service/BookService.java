@@ -111,13 +111,13 @@ public class BookService {
      * 获取旧书列表
      */
     public List<BookResult> getList(String orderBy, String order, String search, Boolean containSold) {
-        if (orderBy != null && !"watch_num".equals(orderBy) && !"price".equals(orderBy)) {
+        if ((!"watch_num".equals(orderBy) && !"price".equals(orderBy))) {
             orderBy = "create_time";
         }
         if (search == null) {
             search = "";
         }
-        search += "%" + search + "%";
+        search = "%" + search + "%";
         if (order == null) {
             order = "DESC";
         }

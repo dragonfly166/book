@@ -1,5 +1,6 @@
 package com.book.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import lombok.Data;
 
@@ -25,5 +26,6 @@ public class Book {
 
     private Boolean sold;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date createTime;
 }

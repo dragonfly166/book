@@ -83,12 +83,7 @@ public class UserController {
         if (user == null) {
             user = new User();
         }
-        String url = null;
-        if (avatarImg != null) {
-            url = imageService.saveImage(avatarImg);
-        }
-        user.setAvatar(url);
-        userMapper.updateUser(user, UserUtil.getUserId());
+        userService.update(user, avatarImg);
         return ApiResult.success();
     }
 }
