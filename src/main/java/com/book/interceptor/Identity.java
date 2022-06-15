@@ -17,7 +17,7 @@ public class Identity implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
         Object handler) throws Exception {
-        String authentication = request.getHeader("authentication");
+        String authentication = request.getHeader("authorization");
         UserCoreInfo info = JwtUtil.parseJwt(authentication);
         UserUtil.setInfo(info);
         return true;

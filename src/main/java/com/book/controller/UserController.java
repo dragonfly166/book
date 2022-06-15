@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,9 +31,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private ImageService imageService;
 
     /**
      * 查询我的信息
@@ -59,8 +57,8 @@ public class UserController {
      * 注册用户
      */
     @PostMapping("/register")
-    public ApiResult<?> register(@NotBlank(message = "username不能为空") String username,
-        @NotBlank(message = "password不能为空") String password) throws Exception {
+    public ApiResult<?> register(@NotBlank(message = "用户名不能为空") String username,
+        @NotBlank(message = "密码不能为空") String password) throws Exception {
         userService.register(username, password);
         return ApiResult.success();
     }
@@ -69,8 +67,8 @@ public class UserController {
      * 登录用户
      */
     @PostMapping("/login")
-    public ApiResult<String> login(@NotBlank(message = "username不能为空") String username,
-        @NotBlank(message = "password不能为空") String password) throws Exception {
+    public ApiResult<String> login(@NotBlank(message = "用户名不能为空") String username,
+        @NotBlank(message = "密码不能为空") String password) throws Exception {
         String jwt = userService.login(username, password);
         return ApiResult.success(jwt);
     }
@@ -84,6 +82,18 @@ public class UserController {
             user = new User();
         }
         userService.update(user, avatarImg);
+        return ApiResult.success();
+    }
+
+    /**
+     * 删除用户信息
+     */
+    @PostMapping("/{id}/delete")
+    public ApiResult<?> delete(@PathVariable("id") Integer id) {
+        if (!"admin".equals(UserUtil.getIdentity())) {
+            return ApiResult.fail("非管理员，无权限");
+        }
+        userMapper.deleteUser(id);
         return ApiResult.success();
     }
 }

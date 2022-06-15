@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author sunlongfei
  */
+@Slf4j
 @Service
 public class LackService {
 
@@ -42,11 +44,20 @@ public class LackService {
         List<LackResult> result = new ArrayList<>(lacks.size());
         for (Lack lack: lacks) {
             UserProfile user;
-            String userStr = redisTemplate.opsForValue().get("user:profile:" + lack.getPublisherId() + ":string");
+            String userStr = null;
+            try {
+                userStr = redisTemplate.opsForValue().get("user:profile:" + lack.getPublisherId() + ":string");
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
             if (userStr == null) {
                 user = userMapper.queryUserProfileById(lack.getPublisherId());
-                redisTemplate.opsForValue().set("user:profile:" + lack.getPublisherId() + ":string",
-                    gson.toJson(user), 3, TimeUnit.DAYS);
+                try {
+                    redisTemplate.opsForValue().set("user:profile:" + lack.getPublisherId() + ":string",
+                        gson.toJson(user), 3, TimeUnit.DAYS);
+                } catch (Exception e) {
+                    log.warn(e.getMessage());
+                }
             } else {
                 user = gson.fromJson(userStr, UserProfile.class);
             }

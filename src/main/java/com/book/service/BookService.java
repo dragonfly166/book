@@ -3,6 +3,7 @@ package com.book.service;
 import com.book.domain.AutoKey;
 import com.book.domain.Book;
 import com.book.domain.BookResult;
+import com.book.domain.Data;
 import com.book.domain.Order;
 import com.book.domain.OrderResult;
 import com.book.domain.UserProfile;
@@ -11,9 +12,12 @@ import com.book.mapper.UserMapper;
 import com.book.util.UserUtil;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * @author sunlongfei
  */
+@Slf4j
 @Service
 public class BookService {
 
@@ -53,11 +58,20 @@ public class BookService {
         List<BookResult> result = new ArrayList<>(books.size());
         for (Book book: books) {
             UserProfile user;
-            String userStr = redisTemplate.opsForValue().get("user:profile:" + book.getPublisherId() + ":string");
+            String userStr = null;
+            try {
+                userStr = redisTemplate.opsForValue().get("user:profile:" + book.getPublisherId() + ":string");
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
             if (userStr == null) {
                 user = userMapper.queryUserProfileById(book.getPublisherId());
-                redisTemplate.opsForValue().set("user:profile:" + book.getPublisherId() + ":string",
-                    gson.toJson(user), 3, TimeUnit.DAYS);
+                try {
+                    redisTemplate.opsForValue().set("user:profile:" + book.getPublisherId() + ":string",
+                        gson.toJson(user), 3, TimeUnit.DAYS);
+                } catch (Exception e) {
+                    log.warn(e.getMessage());
+                }
             } else {
                 user = gson.fromJson(userStr, UserProfile.class);
             }
@@ -79,21 +93,39 @@ public class BookService {
         for (Order order: orders) {
             UserProfile user;
             Book book;
+            String str = null;
 
-            String str = redisTemplate.opsForValue().get("user:profile:" + order.getUserId() + ":string");
+            try {
+                str = redisTemplate.opsForValue().get("user:profile:" + order.getUserId() + ":string");
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
             if (str == null) {
                 user = userMapper.queryUserProfileById(order.getUserId());
-                redisTemplate.opsForValue().set("user:profile:" + order.getUserId() + ":string",
-                    gson.toJson(user), 3, TimeUnit.DAYS);
+                try {
+                    redisTemplate.opsForValue().set("user:profile:" + order.getUserId() + ":string",
+                        gson.toJson(user), 3, TimeUnit.DAYS);
+                } catch (Exception e) {
+                    log.warn(e.getMessage());
+                }
             }else {
                 user = gson.fromJson(str, UserProfile.class);
             }
 
-            str = redisTemplate.opsForValue().get("book:info:" + order.getBookId() + ":string");
+            str = null;
+            try {
+                str = redisTemplate.opsForValue().get("book:info:" + order.getBookId() + ":string");
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
             if (str == null) {
                 book = bookMapper.queryBookById(order.getBookId());
-                redisTemplate.opsForValue().set("book:info:" + order.getBookId() + ":string",
-                    gson.toJson(book), 3, TimeUnit.DAYS);
+                try {
+                    redisTemplate.opsForValue().set("book:info:" + order.getBookId() + ":string",
+                        gson.toJson(book), 3, TimeUnit.DAYS);
+                } catch (Exception e) {
+                    log.warn(e.getMessage());
+                }
             } else {
                 book = gson.fromJson(str, Book.class);
             }
@@ -184,5 +216,16 @@ public class BookService {
     public List<OrderResult> getAllOrders() {
         var orders = bookMapper.queryAllOrders();
         return addUsersAndBooks(orders);
+    }
+
+    /**
+     * 获取数据
+     */
+    public Data getData() {
+        var userNum = bookMapper.queryUserNum();
+        var bookData = bookMapper.queryBookData();
+        var orderData = bookMapper.queryOrderData();
+        return new Data(userNum, (Long) bookData.get("bookNum"), (Long) orderData.get("purchaseNum"),
+            (Double) orderData.get("turnover"), (BigDecimal) bookData.get("visitNum"));
     }
 }

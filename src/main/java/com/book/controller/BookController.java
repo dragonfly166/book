@@ -1,6 +1,7 @@
 package com.book.controller;
 
 import com.book.domain.BookResult;
+import com.book.domain.Data;
 import com.book.domain.Order;
 import com.book.domain.OrderResult;
 import com.book.mapper.BookMapper;
@@ -94,5 +95,29 @@ public class BookController {
         }
         var orders = bookService.getAllOrders();
         return ApiResult.success(orders);
+    }
+
+    /**
+     * 删除书籍信息
+     */
+    @PostMapping("/book/{id}/delete")
+    public ApiResult<?> delete(@PathVariable("id") Integer id) {
+        if (!"admin".equals(UserUtil.getIdentity())) {
+            return ApiResult.fail("非管理员，无权限");
+        }
+        bookMapper.deleteBook(id);
+        return ApiResult.success();
+    }
+
+    /**
+     * 获取统计数据
+     */
+    @GetMapping("/data")
+    public ApiResult<Data> data() {
+        if (!"admin".equals(UserUtil.getIdentity())) {
+            return ApiResult.fail("非管理员，无权限");
+        }
+        var data = bookService.getData();
+        return ApiResult.success(data);
     }
 }

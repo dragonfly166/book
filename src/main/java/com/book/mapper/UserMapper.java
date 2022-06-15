@@ -4,6 +4,7 @@ import com.book.domain.User;
 import com.book.domain.UserCoreInfo;
 import com.book.domain.UserProfile;
 import java.util.List;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -55,6 +56,7 @@ public interface UserMapper {
                 + "<if test='user.email!=null'>,email = #{user.email} </if>"
                 + "<if test='user.sex!=null'>,sex = #{user.sex} </if>"
                 + "<if test='user.avatar!=null'>,avatar = #{user.avatar} </if>"
+                + "<if test='user.address!=null'>,address = #{user.address} </if>"
                 + "WHERE id = #{id}</script>")
     void updateUser(User user,int id);
 
@@ -63,4 +65,10 @@ public interface UserMapper {
      */
     @Select("SELECT id, username, avatar FROM user WHERE id = #{id}")
     UserProfile queryUserProfileById(int id);
+
+    /**
+     * 删除用户
+     */
+    @Delete("DELETE FROM user WHERE id = #{id}")
+    void deleteUser(Integer id);
 }

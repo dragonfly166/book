@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * @author sunlongfei
  */
+@Slf4j
 @Service
 public class UserService {
 
@@ -53,15 +55,28 @@ public class UserService {
     public String login(String username, String password) throws Exception {
         String key = "user:core.info:" + DigestUtils.md5DigestAsHex(("username:" + username + "password:" + password).getBytes(
             StandardCharsets.UTF_8));
-        String value = redisTemplate.opsForValue().get(key);
+        String value = null;
+        try {
+            value = redisTemplate.opsForValue().get(key);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        }
         UserCoreInfo info;
         if (value == null) {
             info = userMapper.queryCoreInfo(username, password);
             if (info == null) {
-                redisTemplate.opsForValue().set(key, "empty", 3, TimeUnit.DAYS);
+                try {
+                    redisTemplate.opsForValue().set(key, "empty", 3, TimeUnit.DAYS);
+                } catch (Exception e) {
+                    log.warn(e.getMessage());
+                }
                 throw new Exception("用户或密码错误");
             }
-            redisTemplate.opsForValue().set(key, gson.toJson(info), 3, TimeUnit.DAYS);
+            try {
+                redisTemplate.opsForValue().set(key, gson.toJson(info), 3, TimeUnit.DAYS);
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
         } else if ("empty".equals(value)) {
             throw new Exception("用户或密码错误");
         } else {
@@ -84,8 +99,12 @@ public class UserService {
         //更新redis
         if (user.getUsername() != null || user.getAvatar() != null) {
             var updatedUser = userMapper.queryUserProfileById(UserUtil.getUserId());
-            redisTemplate.opsForValue().set("user:profile:" + UserUtil.getUserId() + ":string",
-                gson.toJson(updatedUser), 3, TimeUnit.DAYS);
+            try {
+                redisTemplate.opsForValue().set("user:profile:" + UserUtil.getUserId() + ":string",
+                    gson.toJson(updatedUser), 3, TimeUnit.DAYS);
+            } catch (Exception e) {
+                log.info(e.getMessage());
+            }
         }
     }
 }

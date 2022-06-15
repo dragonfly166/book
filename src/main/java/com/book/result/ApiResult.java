@@ -1,8 +1,11 @@
 package com.book.result;
 
+import javax.servlet.http.HttpServletResponse;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author sunlongfei
@@ -27,8 +30,10 @@ public class ApiResult<T> {
         return new ApiResult<>("success", data);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public static <W> ApiResult<W> fail(String msg) {
+        var attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletResponse response = attributes.getResponse();
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return new ApiResult<>(msg, null);
     }
 }

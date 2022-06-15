@@ -24,6 +24,8 @@ public class User {
 
     private String identity;
 
+    private String address;
+
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private Date registerTime;
 }

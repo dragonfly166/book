@@ -4,7 +4,10 @@ import com.book.domain.AutoKey;
 import com.book.domain.Book;
 import com.book.domain.Order;
 import java.util.List;
+import java.util.Map;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
@@ -72,4 +75,22 @@ public interface BookMapper {
      */
     @Insert("insert into book (name, description, image, price, publisher_id) values (#{name}, #{description}, #{imageUrl}, #{price}, #{publisherId})")
     void addBook(String name, String description, String imageUrl, double price, int publisherId);
+
+    /**
+     * 删除书籍
+     */
+    @Delete("DELETE FROM book WHERE id = #{id}")
+    void deleteBook(Integer id);
+
+    /**
+     * 获取相关数据
+     */
+    @Select("SELECT COUNT(*) AS userNum FROM user")
+    Long queryUserNum();
+
+    @Select("SELECT COUNT(*) AS bookNum, SUM(watch_num) AS visitNum FROM book")
+    Map<String, Object> queryBookData();
+
+    @Select("SELECT COUNT(*) AS purchaseNum, SUM(cost) AS turnover FROM `order`")
+    Map<String, Object> queryOrderData();
 }

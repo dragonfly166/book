@@ -27,7 +27,7 @@ public class InterceptorConfig extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(identity)
              .addPathPatterns("/**")
-             .excludePathPatterns("/user/login", "/user/register");
+             .excludePathPatterns("/user/login", "/user/register", "/image/**");
         super.addInterceptors(registry);
     }
 }
